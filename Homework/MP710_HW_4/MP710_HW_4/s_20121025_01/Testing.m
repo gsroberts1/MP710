@@ -13,8 +13,8 @@ clear all
 close all
 
 cd('../..')
-hw4dir = 'C:\Users\groberts\Documents\Fall 2018 Classwork\MP710\Homework\MP710_HW_4\MP710_HW_4\s_20121025_01';
-%  hw4dir = 'C:\Users\robertsgr\Documents\MP710\Homework\MP710_HW_4\MP710_HW_4\s_20121025_01';
+% hw4dir = 'C:\Users\groberts\Documents\Fall 2018 Classwork\MP710\Homework\MP710_HW_4\MP710_HW_4\s_20121025_01';
+hw4dir = 'C:\Users\robertsgr\Documents\MP710\Homework\MP710_HW_4\MP710_HW_4\s_20121025_01';
 cd(hw4dir);                         % Start at home
 addpath(genpath('.'))               % Add all subfolders to path
 cd('./01.fid');                     % Go in the T1 mapping dataset
@@ -27,7 +27,8 @@ info = load_procpar('./procpar');   % Header information
 disp(['The TR is: ' num2str(info.tr*1000) ' ms']);
 disp(['The TE is: ' num2str(info.te*1000) ' ms']);
 disp(['The flip angle is: ' num2str(info.flip1) ' degrees']);
-disp(['The inversion times (TIs) are: ' num2str(info.ti*1000) ' ms']);
+ti = info.ti*1000;
+disp(['The inversion times (TIs) are: ' num2str(floor(ti)) ' (ms)']);
 
 
 % % 1b.) Load k-Space Data into Matlab and Reconstruct Images % Load the
@@ -35,17 +36,17 @@ disp(['The inversion times (TIs) are: ' num2str(info.ti*1000) ' ms']);
 % % matrix size on the command line. 
 
 kspace = load_echoes('./fid');
-data1b = fftshift(ifft2(fftshift(kspace))); 
+data1 = fftshift(ifft2(fftshift(kspace))); 
 
-mag1b = abs(data1b);
-phase1b = angle(data1b);
+mag1 = abs(data1);
+phase1 = angle(data1);
 
 figure;
 subplot(1,2,1)
-imshow(mag1b(:,:,1),[])
+imshow(mag1(:,:,1),[])
 title 'Magnitude';
 subplot(1,2,2)
-imshow(phase1b(:,:,1),[])
+imshow(phase1(:,:,1),[])
 title 'Phase';
 
 % % 1c.) Investigate How the TI Parameter Affects Image Contrast & Signal %
@@ -53,18 +54,18 @@ title 'Phase';
 % % changes with TI. From now on, we will be dealing only with magnitude
 % % images.
 
-maxPix = ceil(max(max(max(mag1b))));
-minPix = floor(min(min(min(mag1b))));
+maxPix = ceil(max(max(max(mag1))));
+minPix = floor(min(min(min(mag1))));
 
 figure;
 for i=1:10
     subplot(2,5,i)
-    imshow(mag1b(:,:,i),[minPix maxPix])
+    imshow(mag1(:,:,i),[minPix maxPix])
 end
 
 % Vial #1 - Lower-Left   (0.40 mM Gd-DTPA)
 figure;
-imshow(mag1b(:,:,1),[])
+imshow(mag1(:,:,1),[])
 ROI1 = drawrectangle('Color','g','Label','ROI1');
 title('Vial #1 - Lower-Left   (0.40 mM Gd-DTPA)');
 i1 = floor(ROI1.Position);          % Position of the ROI [xmin, ymin, width, height]
@@ -74,17 +75,17 @@ cols1 = i1(1):(i1(1)+i1(3));
 
 means1 = zeros(1,10);
 for i=1:10
-    means1(i) = mean2(mag1b(rows1,cols1,i));
+    means1(i) = mean2(mag1(rows1,cols1,i));
 end
 
 sd1 = zeros(1,10);
 for i=1:10
-    sd1(i) = std2(mag1b(rows1,cols1,i));
+    sd1(i) = std2(mag1(rows1,cols1,i));
 end
 
 % Vial #2 - Upper-Middle (0.14 mM Gd-DTPA)
 figure;
-imshow(mag1b(:,:,1),[])
+imshow(mag1(:,:,1),[])
 ROI2 = drawrectangle('Color','g','Label','ROI2');
 title('Vial #2 - Upper-Middle (0.14 mM Gd-DTPA)');
 i2 = floor(ROI2.Position);          % Position of the ROI [xmin, ymin, width, height]
@@ -95,16 +96,16 @@ cols2 = i2(1):i2(3);
 
 means2 = zeros(1,10);
 for i=1:10
-    means2(i) = mean2(mag1b(rows2,cols2,i));
+    means2(i) = mean2(mag1(rows2,cols2,i));
 end
 sd2 = zeros(1,10);
 for i=1:10
-    sd2(i) = std2(mag1b(rows2,cols2,i));
+    sd2(i) = std2(mag1(rows2,cols2,i));
 end
 
 % Vial #3 - Lower-Right  (0.06 mM Gd-DTPA)
 figure;
-imshow(mag1b(:,:,1),[])
+imshow(mag1(:,:,1),[])
 ROI3 = drawrectangle('Color','g','Label','ROI3');
 title('Vial #3 - Lower-Right  (0.06 mM Gd-DTPA)');
 i3 = floor(ROI3.Position);          % Position of the ROI [xmin, ymin, width, height]
@@ -114,33 +115,33 @@ rows3 = i3(2):i3(4);
 cols3 = i3(1):i3(3);
 means3 = zeros(1,10);
 for i=1:10
-    means3(i) = mean2(mag1b(rows3,cols3,i));
+    means3(i) = mean2(mag1(rows3,cols3,i));
 end
 sd3 = zeros(1,10);
 for i=1:10
-    sd3(i) = std2(mag1b(rows3,cols3,i));
+    sd3(i) = std2(mag1(rows3,cols3,i));
 end
 
 %Plot means of each ROI
 figure;
 subplot(3,1,1)
 hold on
-plot(info.ti*1000,means1)
-plot(info.ti*1000,sd1)
+plot(ti,means1)
+plot(ti,sd1)
 title('Vial 1'); xlabel 'TI (ms)'; ylabel 'Signal [a.u.]'
 hold off
 
 subplot(3,1,2)
 hold on
-plot(info.ti*1000,means2)
-plot(info.ti*1000,sd3)
+plot(ti,means2)
+plot(ti,sd3)
 title('Vial 2'); xlabel 'TI (ms)'; ylabel 'Signal [a.u.]'
 hold off
 
 subplot(3,1,3)
 hold on
-plot(info.ti*1000,means3)
-plot(info.ti*1000,sd3)
+plot(ti,means3)
+plot(ti,sd3)
 title('Vial 3'); xlabel 'TI (ms)'; ylabel 'Signal [a.u.]'
 hold off
 
@@ -161,24 +162,23 @@ hold off
 % % least-squares solver"
 % Some code is provided to get started.
 
-ti = info.ti*1000;
 theta_init = [0 0];
 pd = zeros(128,128);
 t1 = zeros(128,128);
     
 %% Loop over each voxel in the image.
 
-for ii = 1:size(mag1b, 1)
-  for jj = 1:size(mag1b, 2)
+for ii = 1:size(mag1, 1)
+  for jj = 1:size(mag1, 2)
     
     % Keep track of progress
-    progressbar(ii/(size(mag1b,1)+1));
+    progressbar(ii/(size(mag1,1)+1));
     
     % Grab the MRI data from each TI for this voxel
-    vox_data = double(squeeze(abs(mag1b(ii,jj,:))))';
+    vox_data = double(squeeze(abs(mag1(ii,jj,:))))';
     
     % Initial value TI value should be close to the proton density.
-    theta_init(1) = mag1b(ii,jj,1);
+    theta_init(1) = mag1(ii,jj,1);
     % T1 should be approximately TI_null/0.69 when TR >> T1.
     theta_init(2) = min(vox_data)*1.443;
 
@@ -219,13 +219,13 @@ pd_sd_vial1 = std2(pd(rows1,cols1));
 t1_mean_vial1 = mean2(t1(rows1,cols1));
 t1_sd_vial1 = std2(t1(rows1,cols1));
 
-% Vial 1
+% Vial 2
 pd_mean_vial2 = mean2(pd(rows2,cols2));
 pd_sd_vial2 = std2(pd(rows2,cols2));
 t1_mean_vial2 = mean2(t1(rows2,cols2));
 t1_sd_vial2 = std2(t1(rows2,cols2));
 
-% Vial 1
+% Vial 3
 pd_mean_vial3 = mean2(pd(rows3,cols3));
 pd_sd_vial3 = std2(pd(rows3,cols3));
 t1_mean_vial3 = mean2(t1(rows3,cols3));
@@ -243,10 +243,38 @@ T = table(Vial1,Vial2,Vial3,'RowNames',Labels)
 % and T1 to "fill in the curve" in-between actual data points).
 % Label the axes with the proper names and units.
 
-% <code here>
+%% 
+fit1 = abs(pd_mean_vial1.*(1-2*exp(-(ti./t1_mean_vial1))));
+fit2 = abs(pd_mean_vial2.*(1-2*exp(-(ti./t1_mean_vial2))));
+fit3 = abs(pd_mean_vial3.*(1-2*exp(-(ti./t1_mean_vial3))));
+
+% Vial 1
+figure;
+hold on
+plot(ti,fit1,'-.or');
+scatter(ti,means1,'k','filled');
+xlabel('TI (ms)'); ylabel('Signal (a.u.)'); title('Vial 1: Model vs Data'); legend('Fit', 'Empirical Data');
+hold off
+
+% Vial 2
+figure;
+hold on
+plot(ti,fit2,'-.g');
+scatter(ti,means2,'k','filled');
+xlabel('TI (ms)'); ylabel('Signal (a.u.)'); title('Vial 2: Model vs Data'); legend('Fit', 'Empirical Data');
+hold off
+
+% Vial 3
+figure;
+hold on
+plot(ti,fit3,'-.b');
+scatter(ti,means3,'k','filled');
+xlabel('TI (ms)'); ylabel('Signal (a.u.)'); title('Vial 3: Model vs Data'); legend('Fit', 'Empirical Data');
+hold off
 
 cd('../');
 load_sdir;
+%% 
 
 % % II. Problem Two -- Reconstruct 2D Spine Echo Measurements and Generate T2
 % % Maps The object of the second problem is to generate a T2 map of the
@@ -258,12 +286,27 @@ load_sdir;
 % % warnings or errors. Then, load in the header and k-space data. Print the
 % % following basic scan parameters to the command line: TR, TEs, flip angle.
 % % Label these with the correct units.
-% <code here>
 
+cd(hw4dir);                         % Start at home
+cd('./02.fid');                     % Go in the T1 mapping dataset
+
+type('./text');                     % Pulse sequence info
+type('./log');                      % Error log
+info2 = load_procpar('./procpar');  % Header information
+
+% Output TR, TE, and flip angle
+disp(['The TR is: ' num2str(info2.tr*1000) ' ms']);
+te = info2.te*1000;
+disp(['The TE times are: ' num2str(te) ' (ms)']);
+disp(['The flip angle is: ' num2str(info2.flip1) ' degrees']);
+
+%% 
 % % 2b.) Load k-Space Data into Matlab and Reconstruct Images Load the raw
 % % k-space data file into Matlab using our custom command. Display the
 % % matrix size on the command line.
-% <code here>
+
+kspace2 = load_echoes('./fid');
+disp(['The matrix size is: ' num2str(size(kspace2,1)) 'x' num2str(size(kspace2,2)) 'x' num2str(size(kspace2,3)) '.'])
 
 % You will observe that the data size is 128x128x10. This corresponds to a
 % readout length of 128 complex-valued points, 128 phase encode lines, and
@@ -271,26 +314,43 @@ load_sdir;
 %
 % As in (1b), perform a basic FFT reconstruction on the data to produce images.
 
-% <code here>
+data2 = fftshift(ifft2(fftshift(kspace2)));
+
+mag2 = abs(data2);
+phase2 = angle(data2);
 
 % Next, let us take a look at our images to verify that our reconstruction looks
 % good. Make a figure showing the magnitude and phase images of the first TE.
 % Label the images them with appropriate titles and units.
 
-% <code here>
+figure;
+subplot(1,2,1)
+imshow(mag2(:,:,1),[])
+title 'Magnitude (TE = 50 ms)';
+subplot(1,2,2)
+imshow(phase2(:,:,1),[])
+title 'Phase (TE = 50 ms)';
 
 % You should now have great looking magnitude and phase images.
+%% 
 
 % % 2c.) Investigate How the TE Parameter Affects Image Contrast & Signal In
 % % this section, we will investigate how the image intensity of each vial
 % % changes with echo time. From now on, we will be dealing only with
-% % magnitude images. image = abs(image);
+% % magnitude images.
 
 % Start by plotting the image for each TE. Again, use subplot() so that all 10
 % images are in the same figure, and label each of them with the appropriate TE.
 % All images should be displayed on the same scale, and in gray-scale.
 
-% <code here>
+maxPix = ceil(max(max(max(mag2))));
+minPix = floor(min(min(min(mag2))));
+
+figure;
+for i=1:10
+    subplot(2,5,i)
+    imshow(mag2(:,:,i),[minPix maxPix])
+end
 
 % Unlike the case for the IR experiment, increasing TE does not create "null
 % points" or drastically change the contrast of signal between the vials.
@@ -301,12 +361,64 @@ load_sdir;
 % changing. Try to put all three plots in the same figure if possible, and label
 % the axes with the proper units. Use the ROIs defined from #1.
 
-% <code here>
+% Vial #1 - Lower-Left   (0.40 mM Gd-DTPA)
+means1 = zeros(1,10);
+for i=1:10
+    means1(i) = mean2(mag2(rows1,cols1,i));
+end
+sd1 = zeros(1,10);
+for i=1:10
+    sd1(i) = std2(mag2(rows1,cols1,i));
+end
+
+% Vial #2 - Upper-Middle (0.14 mM Gd-DTPA)
+means2 = zeros(1,10);
+for i=1:10
+    means2(i) = mean2(mag2(rows2,cols2,i));
+end
+sd2 = zeros(1,10);
+for i=1:10
+    sd2(i) = std2(mag2(rows2,cols2,i));
+end
+
+% Vial #3 - Lower-Right  (0.06 mM Gd-DTPA)
+means3 = zeros(1,10);
+for i=1:10
+    means3(i) = mean2(mag2(rows3,cols3,i));
+end
+sd3 = zeros(1,10);
+for i=1:10
+    sd3(i) = std2(mag2(rows3,cols3,i));
+end
+
+%Plot means of each ROI
+figure;
+subplot(3,1,1)
+hold on
+plot(te,means1)
+plot(te,sd1)
+title('Vial 1'); xlabel 'TE (ms)'; ylabel 'Signal [a.u.]'
+hold off
+
+subplot(3,1,2)
+hold on
+plot(te,means2)
+plot(te,sd3)
+title('Vial 2'); xlabel 'TE (ms)'; ylabel 'Signal [a.u.]'
+hold off
+
+subplot(3,1,3)
+hold on
+plot(te,means3)
+plot(te,sd3)
+title('Vial 3'); xlabel 'TE (ms)'; ylabel 'Signal [a.u.]'
+hold off
 
 % As expected, the signal slowly decays away as TE increases. Although it may
 % not be readily apparent, these data points follow the shape of a
 % mono-exponential decay curve. We simply have not sampled a long enough TE to
 % see the signal decay away to a value near zero.
+%% 
 
 % % 2d.) Fitting Spin-Echo Signal to Compute T2 Now we are going to fit the
 % % spin echo data at each voxel to a mathematical model of the MRI signal
@@ -318,25 +430,47 @@ load_sdir;
 % As before, some code is provided to get started.
 
 % Loop over each voxel in the image.
-for ii = 1:size(image, 1)
-  for jj = 1:size(image, 2)
+
+theta_init = [0 0];
+pd = zeros(128,128);
+t1 = zeros(128,128);
+
+for ii = 1:size(mag2, 1)
+  for jj = 1:size(mag2, 2)
     
     % Keep track of progress
-    progressbar(ii/(size(image,1)+1));
+    progressbar(ii/(size(mag2,1)+1));
     
     % Grab the MRI data from each TE for this voxel
-    vox_data = double(squeeze(abs(image(ii,jj,:))))';
+    vox_data = double(squeeze(abs(mag2(ii,jj,:))))';
     
-    % <code here>
+    % Initial value should be close to the proton density.
+    theta_init(1) = mag2(ii,jj,1);
+    % e^-x ~ 1 - x
+    % Since M = M0*e^-(te/t2) we can use a first order approximation for
+    % signals at M1 (M at te1) and M2 (M at te2) to approximate t2.
+    % T2 ~ M1*TE2/(M1-M2)
+    theta_init(2) = (mag2(ii,jj,1)*te(2))/(mag2(ii,jj,1)-mag2(ii,jj,2));
+
+    % Signal model
+    fun = @(theta) theta(1)*exp(-(te./theta(2)))-vox_data;
+    
+    % Finally, use a nonlinear least-squares solver to fit the data to the
+    % model, using the initial guess as a starting point.
+    lb = [0 0.001];
+    ub = [30 3000];
+    options = optimoptions('lsqnonlin','Display','off');
+    theta = lsqnonlin(fun,theta_init,lb,ub,options);
     
     % Assign the results of the model to two output variables: pd and t2
-    pd(ii,jj) = pd;
-    t2(ii,jj) = t2;
+    pd(ii,jj) = theta(1);
+    t2(ii,jj) = theta(2);
   end
 end
 
 % Close the progress bar
 progressbar(1);
+%% 
 
 % % 2e.) Analyze Results of T2 Mapping in a Variety of Ways Now that we have
 % % fitted our MRI data to the spin echo model, we now want to visualize and
@@ -344,7 +478,9 @@ progressbar(1);
 % % maps on the same figure using subplot(). Put a color scale bar on each
 % % image and label them with appropriate units. Mask out the background
 % % noise so it is easier to observe the actual phantom.
-% <code here>
+
+figure; subplot(1,2,1); imshow(pd,[]); colorbar; title('Proton Density Map');
+subplot(1,2,2); imshow(t2,[]); colorbar; title('T2 Map');
 
 % *The range of T2 should be between 0 and 600 milliseconds
 % *Each of the three vials + background water should have a different T2 values.
@@ -352,18 +488,68 @@ progressbar(1);
 % Compute the mean and standard deviation of both PD and T1 using the regions of
 % interest from 1c. Display these values, making sure to label units!
 
-% <code here>
+% Vial 1
+pd_mean_vial1 = mean2(pd(rows1,cols1));
+pd_sd_vial1 = std2(pd(rows1,cols1));
+t2_mean_vial1 = mean2(t2(rows1,cols1));
+t2_sd_vial1 = std2(t2(rows1,cols1));
+
+% Vial 2
+pd_mean_vial2 = mean2(pd(rows2,cols2));
+pd_sd_vial2 = std2(pd(rows2,cols2));
+t2_mean_vial2 = mean2(t2(rows2,cols2));
+t2_sd_vial2 = std2(t2(rows2,cols2));
+
+% Vial 3
+pd_mean_vial3 = mean2(pd(rows3,cols3));
+pd_sd_vial3 = std2(pd(rows3,cols3));
+t2_mean_vial3 = mean2(t2(rows3,cols3));
+t2_sd_vial3 = std2(t2(rows3,cols3));
+
+Vial1 = [pd_mean_vial1; pd_sd_vial1; t2_mean_vial1; t2_sd_vial1];
+Vial2 = [pd_mean_vial2; pd_sd_vial2; t2_mean_vial2; t2_sd_vial2];
+Vial3 = [pd_mean_vial3; pd_sd_vial3; t2_mean_vial3; t2_sd_vial3];
+Labels = {'PD Mean (a.u.)'; 'PD Standard Deviation (a.u.)'; 'T2 Mean (ms)'; 'T2 Standard Deviation (ms)'};
+
+T = table(Vial1,Vial2,Vial3,'RowNames',Labels)
+
+%% 
 
 % Finally, display the fitted spin echo signal on top of the actual MRI data
 % points (similar to what we did in 1e, but for PD and T2).
 % Label the ordinate and abscissa with the proper names and units.
 % Extrapolate your fitted signal curve all the way out to 1000 ms.
 
-% <code here>
+fit1 = pd_mean_vial1*exp(-(te./t2_mean_vial1));
+fit2 = pd_mean_vial2*exp(-(te./t2_mean_vial2));
+fit3 = pd_mean_vial3*exp(-(te./t2_mean_vial3));
+
+% Vial 1
+figure;
+hold on
+plot(te,fit1,'-.or');
+scatter(te,means1,'k','filled');
+xlabel('T2 (ms)'); ylabel('Signal (a.u.)'); title('Vial 1: Model vs Data'); legend('Fit', 'Empirical Data');
+hold off
+
+% Vial 2
+figure;
+hold on
+plot(te,fit2,'-.g');
+scatter(te,means2,'k','filled');
+xlabel('T2 (ms)'); ylabel('Signal (a.u.)'); title('Vial 2: Model vs Data'); legend('Fit', 'Empirical Data');
+hold off
+
+% Vial 3
+figure;
+hold on
+plot(te,fit3,'-.b');
+scatter(te,means3,'k','filled');
+xlabel('T2 (ms)'); ylabel('Signal (a.u.)'); title('Vial 3: Model vs Data'); legend('Fit', 'Empirical Data');
+hold off
 
 % Congratulations! You have just performed your first T2 mapping experiment.
 cd('..');
-load_sdir;
 
 % % III - Appendix Series #1 and #2 are all that are needed to complete this
 % % assignment. However, during the laboratory, we also acquired some
