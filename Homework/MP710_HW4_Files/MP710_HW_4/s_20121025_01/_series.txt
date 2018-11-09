@@ -1,0 +1,11 @@
+|--------|-----------------|----------------|---------|---------|--------|        
+| Series | Sequence        | Comment        | TR      | TE      | Flip   |        
+|--------|-----------------|----------------|---------|---------|--------|        
+| 01.fid | sems            | T1 Map         | 6000 ms | 15 ms | 90 dgr |          
+| 02.fid | sems            | T2 Map         | 1000 ms | mtpl ms | 90 dgr |        
+| 03.fid | gems            | Scout Scan #1  | 30 ms | 5 ms | 20 dgr |             
+| 04.fid | gems            | Scout Scan #2  | 30 ms | 5 ms | 20 dgr |             
+| 05.fid | epip            | Gradient Echo EPI 1-Shot | 4000 ms | 12 ms | 90 dgr |
+| 06.fid | epip            | Gradient Echo EPI 4-Shots | 4000 ms | 5 ms | 90 dgr |
+| 07.fid | epip            | Spin Echo EPI 4-Shots | 4000 ms | 11 ms | 90 dgr |   
+|--------|-----------------|----------------|---------|---------|--------|        

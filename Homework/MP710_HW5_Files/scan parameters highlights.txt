@@ -1,0 +1,18 @@
+Jnauary 30th, 2004
+-----
+
+FLASH sequence with constant TR and varying TE
+Multiple single echo acquisitions with shifted TE
+
+ Res 256*256
+ FOV 300*300*10
+ TR = 40 ms; 
+ TE = 4.0 ms (Series 01)
+ TE = 6.0 ms (Series 02)
+ TE = 8.0 ms (Series 03)
+
+
+
+
+
+
