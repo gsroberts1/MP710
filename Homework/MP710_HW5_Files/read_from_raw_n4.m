@@ -44,32 +44,6 @@ end
 
 
 function out = read_raw_n4_local(in,debug)
-%function out = read_raw_n4_local(in,N_read,debug)
-% Read raw data from a Numaris4 scan (VA21 or 23) into a complex matrix.  
-%  The function takes the binary file IN (a Numaris4 file 'meas.out'), 
-%  strips off all the header information, and stores the data into a 
-%  a complex 2D matrix OUT.
-% In the case of multi-receiver acquisitions, the data are stored 'interleaved'.
-%  For example with four receiver channels the first echo is stored four
-%  times before the second echo is stored:
-%    echo 1, receiver 1
-%    echo 1, receiver 2
-%    echo 1, receiver 3
-%    echo 1, receiver 4
-% No test on 3D sequences yet!
-%
-% DEBUG defines the level of debug information during execution.
-%
-% Example: out = read_raw_n4('meas.out',5);
-%
-% written by Oliver Wieben, Uniklinik Freiburg 12Sep2002
-%      10Nov03 OW automatic detection of # of samples per readout
-% 
-
-if debug == -1
-  in = 'd:\user\wieben\Work_in_Progress\Radiale_Bildgebung\Daten\Daten_12Sep02';
-end
-  
 %% Define important variables
  % byte size per float = 4
 b_float = 4;

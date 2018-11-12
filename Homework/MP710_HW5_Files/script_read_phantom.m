@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% INPUTS
 % data path
 % enter the proper directory here:
- path_root = 'E:\ZZZ  Med Phys 2014\05 Homeworks\HW3 - Phase\Posted\Data_Phantom\';
+ path_root = [hw5dir '\Data_Phantom\'];
 
 % the raw data files stored in Siemens Sonata format 2004
 im_path(1,:) = [path_root '01\meas.out'];
